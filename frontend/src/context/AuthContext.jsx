@@ -19,6 +19,7 @@ export function AuthProvider({ children }) {
     if (storedToken) {
       setToken(storedToken);
       setIsAuthenticated(true);
+      setAuthToken(storedToken); // Set token in axios headers on app load
     }
     setLoading(false);
   }, []);
@@ -31,7 +32,7 @@ export function AuthProvider({ children }) {
         localStorage.setItem('authToken', token);
         setToken(token);
         setIsAuthenticated(true);
-        setAuthToken(token); // add this where you store token in localStorage/state
+        setAuthToken(token); // Set token in axios headers
         return response;
       }
       throw new Error('No token received');
@@ -44,7 +45,7 @@ export function AuthProvider({ children }) {
     localStorage.removeItem('authToken');
     setToken(null);
     setIsAuthenticated(false);
-    setAuthToken(null); // on logout
+    setAuthToken(null); // Remove token from axios headers
   };
 
   const value = {

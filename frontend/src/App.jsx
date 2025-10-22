@@ -4,7 +4,8 @@ import { useTheme } from './context/ThemeContext';
 import Header from './components/Header';
 import Footer from './components/Footer';
 import AdminDashboard from './components/AdminDashboard';
-import ItemsPage from './components/ItemsPage';
+import AdminLogin from './components/AdminLogin';
+import UserDashboard from './components/UserDashboard';
 import { fetchItems } from './api/itemsApi';
 
 function App() {
@@ -20,6 +21,7 @@ function App() {
       setItems(Array.isArray(data) ? data : []);
     } catch (error) {
       console.error('Failed to load items:', error);
+      setItems([]);
     }
   };
 
@@ -27,20 +29,22 @@ function App() {
     loadItems();
   }, []);
 
+  const renderContent = () => {
+    if (viewMode === 'admin') {
+      if (!isAuthenticated) {
+        return <AdminLogin />;
+      }
+      return <AdminDashboard items={items} onItemUpdated={loadItems} />;
+    }
+    return <UserDashboard items={items} onItemAdded={loadItems} />;
+  };
+
   return (
     <div className={`min-h-screen ${isDark ? 'dark bg-gray-900 text-white' : 'bg-gray-50'}`}>
       <Header viewMode={viewMode} setViewMode={setViewMode} />
       
       <main className="container mx-auto px-4 py-8">
-        {viewMode === 'admin' ? (
-          isAuthenticated ? (
-            <AdminDashboard items={items} onItemUpdated={loadItems} />
-          ) : (
-            <div className="text-center py-8">Please log in as admin</div>
-          )
-        ) : (
-          <ItemsPage items={items} onItemAdded={loadItems} />
-        )}
+        {renderContent()}
       </main>
       
       <Footer />

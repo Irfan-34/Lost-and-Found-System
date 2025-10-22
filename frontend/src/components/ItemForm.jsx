@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { createItem } from '../api/itemsApi';
 import { useTheme } from '../context/ThemeContext';
 
-function ItemForm({ onClose, onItemAdded }) {
+function ItemForm({ onClose, onItemAdded, defaultStatus = 'Lost' }) {
   const { theme } = useTheme();
   const isDark = theme === 'dark';
 
@@ -12,8 +12,8 @@ function ItemForm({ onClose, onItemAdded }) {
     date: '',
     reporterName: '',
     reporterContact: '',
-    status: 'Lost',
-    category: 'Electronics' // Add default category
+    status: defaultStatus,
+    category: 'Electronics'
   });
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [error, setError] = useState('');
@@ -21,51 +21,46 @@ function ItemForm({ onClose, onItemAdded }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
-      // Show some loading state
-      setIsSubmitting(true); // Add this state if not present
+      setIsSubmitting(true);
+      setError('');
       
-      // Make sure the status is capitalized to match backend expectations
       const updatedFormData = {
         ...formData,
-        status: formData.status.charAt(0).toUpperCase() + formData.status.slice(1)
+        itemName: formData.description // Backend expects itemName field
       };
 
       await createItem(updatedFormData);
       
-      // Clear form after successful submission
       setFormData({
         description: '',
         location: '',
         date: '',
         reporterName: '',
         reporterContact: '',
-        status: 'Lost',
+        status: defaultStatus,
         category: 'Electronics'
       });
 
-      // Call the success callback if provided
       onItemAdded?.();
       onClose?.();
     } catch (error) {
       console.error('Error submitting item:', error);
-      // Show error to user
-      // Add error state if not present
       setError(error.message || 'Failed to submit item'); 
     } finally {
       setIsSubmitting(false);
     }
   };
 
-  // Categories list
   const categories = [
     'Electronics',
     'Clothing',
     'Documents',
     'Accessories',
+    'Books',
+    'Keys',
     'Other'
   ];
 
-  // Define dark mode classes
   const inputClasses = `w-full p-2 border rounded ${
     isDark 
       ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
@@ -79,8 +74,14 @@ function ItemForm({ onClose, onItemAdded }) {
   return (
     <form onSubmit={handleSubmit} className={`space-y-4 ${isDark ? 'text-white' : ''}`}>
       <h2 className={`text-xl font-bold mb-4 ${isDark ? 'text-white' : 'text-gray-900'}`}>
-        Report an Item
+        Report {defaultStatus} Item
       </h2>
+      
+      {error && (
+        <div className="bg-red-100 text-red-700 p-3 rounded-md mb-4">
+          {error}
+        </div>
+      )}
       
       <div>
         <label className={labelClasses}>Description</label>
@@ -89,10 +90,10 @@ function ItemForm({ onClose, onItemAdded }) {
           value={formData.description}
           onChange={e => setFormData(prev => ({ ...prev, description: e.target.value }))}
           required
+          placeholder="Describe the item..."
         />
       </div>
 
-      {/* Add Category field */}
       <div>
         <label className={labelClasses}>Category</label>
         <select
@@ -115,6 +116,7 @@ function ItemForm({ onClose, onItemAdded }) {
           value={formData.location}
           onChange={e => setFormData(prev => ({ ...prev, location: e.target.value }))}
           required
+          placeholder="Where was it lost/found?"
         />
       </div>
 
@@ -137,6 +139,7 @@ function ItemForm({ onClose, onItemAdded }) {
           value={formData.reporterName}
           onChange={e => setFormData(prev => ({ ...prev, reporterName: e.target.value }))}
           required
+          placeholder="Your full name"
         />
       </div>
 
@@ -148,20 +151,8 @@ function ItemForm({ onClose, onItemAdded }) {
           value={formData.reporterContact}
           onChange={e => setFormData(prev => ({ ...prev, reporterContact: e.target.value }))}
           required
+          placeholder="Phone or email"
         />
-      </div>
-
-      <div>
-        <label className={labelClasses}>Type</label>
-        <select
-          className={inputClasses}
-          value={formData.status}
-          onChange={e => setFormData(prev => ({ ...prev, status: e.target.value }))}
-          required
-        >
-          <option value="Lost">Lost Item</option>
-          <option value="Found">Found Item</option>
-        </select>
       </div>
 
       <div className="flex justify-end space-x-2 pt-4">
@@ -178,13 +169,16 @@ function ItemForm({ onClose, onItemAdded }) {
         </button>
         <button
           type="submit"
+          disabled={isSubmitting}
           className={`px-4 py-2 rounded ${
-            isDark
-              ? 'bg-blue-600 text-white hover:bg-blue-700'
-              : 'bg-blue-600 text-white hover:bg-blue-700'
-          }`}
+            isSubmitting 
+              ? 'bg-gray-400 cursor-not-allowed' 
+              : isDark
+                ? 'bg-blue-600 hover:bg-blue-700'
+                : 'bg-blue-600 hover:bg-blue-700'
+          } text-white`}
         >
-          Submit
+          {isSubmitting ? 'Submitting...' : 'Submit'}
         </button>
       </div>
     </form>
