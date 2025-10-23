@@ -12,11 +12,12 @@ const app = express();
 app.use(cors({
   origin: [
     'http://localhost:3000',
-    process.env.FRONTEND_URL,
-    'https://*.vercel.app',
-    'https://*.netlify.app'
+    'https://lost-and-found-frontend-emj2xv617-irfan-34s-projects.vercel.app',
+    process.env.FRONTEND_URL
   ],
-  credentials: true
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization']
 }));
 app.use(express.json());
 
