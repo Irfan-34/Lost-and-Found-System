@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useAuth } from '../context/AuthContext';
 import { checkAdminExists, registerAdmin } from '../api/adminApi';
+import { useTheme } from '../context/ThemeContext';
 
 function AdminLogin() {
+  const { theme } = useTheme();
+  const isDark = theme === 'dark';
+  
   const [isRegistration, setIsRegistration] = useState(false);
   const [adminExists, setAdminExists] = useState(true);
   const [formData, setFormData] = useState({
@@ -55,9 +59,23 @@ function AdminLogin() {
     }
   };
 
+  const inputClasses = `w-full p-2 border rounded-md ${
+    isDark 
+      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500' 
+      : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500'
+  }`;
+
+  const labelClasses = `block mb-2 ${
+    isDark ? 'text-gray-200' : 'text-gray-700'
+  }`;
+
   return (
-    <div className="max-w-md mx-auto mt-10 bg-white p-6 rounded-lg shadow-md">
-      <h2 className="text-2xl font-bold text-gray-800 mb-6">
+    <div className={`max-w-md mx-auto mt-10 p-6 rounded-lg shadow-md ${
+      isDark ? 'bg-gray-800 text-white' : 'bg-white'
+    }`}>
+      <h2 className={`text-2xl font-bold mb-6 ${
+        isDark ? 'text-white' : 'text-gray-800'
+      }`}>
         {isRegistration ? 'Create Admin Account' : 'Admin Login'}
       </h2>
       
@@ -69,7 +87,7 @@ function AdminLogin() {
       
       <form onSubmit={handleSubmit}>
         <div className="mb-4">
-          <label className="block text-gray-700 mb-2">
+          <label className={labelClasses}>
             Username
           </label>
           <input
@@ -77,13 +95,13 @@ function AdminLogin() {
             name="username"
             value={formData.username}
             onChange={handleChange}
-            className="w-full p-2 border rounded-md"
+            className={inputClasses}
             required
           />
         </div>
         
         <div className="mb-6">
-          <label className="block text-gray-700 mb-2">
+          <label className={labelClasses}>
             Password
           </label>
           <input
@@ -91,7 +109,7 @@ function AdminLogin() {
             name="password"
             value={formData.password}
             onChange={handleChange}
-            className="w-full p-2 border rounded-md"
+            className={inputClasses}
             required
           />
         </div>
