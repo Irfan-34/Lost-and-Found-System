@@ -1,8 +1,11 @@
 [build]
-builder = "NIXPACKS"
+builder = "nixpacks"
+buildCommand = "npm install && npx prisma generate"
 
 [deploy]
 startCommand = "npm start"
+restartPolicyType = "on_failure"
+restartPolicyMaxRetries = 10
 
-[env]
-NODE_ENV = "production"
+[[services]]
+name = "lost-and-found-backend"
