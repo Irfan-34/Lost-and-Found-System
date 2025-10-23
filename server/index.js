@@ -1,4 +1,4 @@
-require('dotenv').config(); // ADD THIS LINE AT THE TOP
+require('dotenv').config();
 const express = require('express');
 const cors = require('cors');
 const { PrismaClient } = require('@prisma/client');
@@ -8,8 +8,14 @@ const bcrypt = require('bcrypt');
 const prisma = new PrismaClient();
 const app = express();
 
+// Updated CORS configuration for production
 app.use(cors({
-  origin: 'http://localhost:3000',
+  origin: [
+    'http://localhost:3000',
+    process.env.FRONTEND_URL,
+    'https://*.vercel.app',
+    'https://*.netlify.app'
+  ],
   credentials: true
 }));
 app.use(express.json());
@@ -218,6 +224,6 @@ app.put('/api/items/:id/approve', authenticateAdmin, async (req, res) => {
 });
 
 // Start server
-const PORT = process.env.PORT || 5001; // Make sure this is 5001
+const PORT = process.env.PORT || 5001;
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 
