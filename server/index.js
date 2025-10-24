@@ -21,30 +21,14 @@ app.use(cors({
 }));
 app.use(express.json());
 
-// Middleware to authenticate admin
-const authenticateAdmin = async (req, res, next) => {
-  try {
-    const token = req.headers.authorization?.split(' ')[1];
-    
-    if (!token) {
-      return res.status(401).json({ error: 'Authentication required' });
-    }
-    
-    const decoded = jwt.verify(token, process.env.JWT_SECRET);
-    const admin = await prisma.admin.findUnique({ where: { id: decoded.id } });
-    
-    if (!admin) {
-      return res.status(401).json({ error: 'Invalid authentication' });
-    }
-    
-    req.admin = admin;
-    next();
-  } catch (error) {
-    return res.status(401).json({ error: 'Authentication failed' });
-  }
-};
+// Health check endpoint for Railway
+app.get('/', (req, res) => {
+  res.send('Lost and Found API is running!');
+});
 
-// ADMIN ROUTES
+// --- API ROUTES ---
+
+// Check if any admin exists
 app.get('/api/admin/exists', async (req, res) => {
   try {
     const adminCount = await prisma.admin.count();
