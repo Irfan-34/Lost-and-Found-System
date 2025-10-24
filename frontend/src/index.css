@@ -44,3 +44,75 @@ body {
   display: flex;
   flex-direction: column;
 }
+
+/* Dark mode: make inputs readable globally
+   Works when the 'dark' class is toggled on html (already done in ThemeContext)
+   or if you set data-theme="dark" on html/body.
+*/
+:where([data-theme="dark"], .dark, body.dark)
+  :is(
+    input[type="text"],
+    input[type="email"],
+    input[type="password"],
+    input[type="search"],
+    input[type="number"],
+    input[type="tel"],
+    input[type="url"],
+    input[type="date"],
+    input[type="time"],
+    textarea,
+    select
+  ) {
+  background-color: #111827;
+  color: #f9fafb;
+  border: 1px solid #374151;
+  caret-color: #f9fafb;
+}
+
+/* Placeholder color in dark mode */
+:where([data-theme="dark"], .dark, body.dark) ::placeholder {
+  color: #9ca3af;
+  opacity: 1;
+}
+
+/* Clear focus ring with visible accent */
+:where([data-theme="dark"], .dark, body.dark)
+  :is(input, textarea, select):focus {
+  outline: none;
+  border-color: #60a5fa;
+  box-shadow: 0 0 0 3px rgba(96, 165, 250, 0.35);
+}
+
+/* Disabled fields */
+:where([data-theme="dark"], .dark, body.dark)
+  :is(input, textarea, select)[disabled] {
+  background-color: #1f2937;
+  color: #9ca3af;
+  border-color: #4b5563;
+}
+
+/* Fix WebKit autofill (Chrome) in dark mode */
+:where([data-theme="dark"], .dark, body.dark)
+  input:-webkit-autofill {
+  -webkit-text-fill-color: #f9fafb !important;
+  -webkit-box-shadow: 0 0 0px 1000px #111827 inset;
+  transition: background-color 9999s ease-in-out 0s;
+}
+
+/* Optional: selection color inside inputs */
+:where([data-theme="dark"], .dark, body.dark) ::selection {
+  background: #2563eb;
+  color: #ffffff;
+}
+
+/* Hero background for User view */
+.user-hero {
+  background-image:
+    linear-gradient(0deg, rgba(0,0,0,0.15), rgba(0,0,0,0.15)),
+    url('/hero.jpg'); /* put the image in frontend/public/hero.jpg */
+  background-size: cover;
+  background-position: center center;
+  background-repeat: no-repeat;
+  filter: saturate(1.1) contrast(1.05);
+  transform: scale(1.02);
+}

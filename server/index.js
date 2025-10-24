@@ -1,4 +1,4 @@
-require('dotenv').config();
+require('dotenv').config(); // ADD THIS LINE AT THE TOP
 const express = require('express');
 const cors = require('cors');
 const { PrismaClient } = require('@prisma/client');
@@ -8,27 +8,38 @@ const bcrypt = require('bcrypt');
 const prisma = new PrismaClient();
 const app = express();
 
-// Updated CORS configuration for production
+const allowedOrigin = process.env.CORS_ORIGIN || 'http://localhost:3000';
+
 app.use(cors({
-  origin: [
-    'http://localhost:3000',
-    'https://lost-and-found-frontend-emj2xv617-irfan-34s-projects.vercel.app',
-    process.env.FRONTEND_URL
-  ],
-  credentials: true,
-  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-  allowedHeaders: ['Content-Type', 'Authorization']
+  origin: allowedOrigin,
+  credentials: true
 }));
 app.use(express.json());
 
-// Health check endpoint for Railway
-app.get('/', (req, res) => {
-  res.send('Lost and Found API is running!');
-});
+// Middleware to authenticate admin
+const authenticateAdmin = async (req, res, next) => {
+  try {
+    const token = req.headers.authorization?.split(' ')[1];
+    
+    if (!token) {
+      return res.status(401).json({ error: 'Authentication required' });
+    }
+    
+    const decoded = jwt.verify(token, process.env.JWT_SECRET);
+    const admin = await prisma.admin.findUnique({ where: { id: decoded.id } });
+    
+    if (!admin) {
+      return res.status(401).json({ error: 'Invalid authentication' });
+    }
+    
+    req.admin = admin;
+    next();
+  } catch (error) {
+    return res.status(401).json({ error: 'Authentication failed' });
+  }
+};
 
-// --- API ROUTES ---
-
-// Check if any admin exists
+// ADMIN ROUTES
 app.get('/api/admin/exists', async (req, res) => {
   try {
     const adminCount = await prisma.admin.count();
@@ -209,6 +220,6 @@ app.put('/api/items/:id/approve', authenticateAdmin, async (req, res) => {
 });
 
 // Start server
-const PORT = process.env.PORT || 5001;
+const PORT = process.env.PORT || 5001; // Make sure this is 5001
 app.listen(PORT, () => console.log(`Server running on port ${PORT}`));
 

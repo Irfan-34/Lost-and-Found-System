@@ -63,8 +63,8 @@ function ItemForm({ onClose, onItemAdded, defaultStatus = 'Lost' }) {
 
   const inputClasses = `w-full p-2 border rounded ${
     isDark 
-      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400 focus:border-blue-500 focus:ring-1 focus:ring-blue-500' 
-      : 'bg-white border-gray-300 text-gray-900 focus:border-blue-500 focus:ring-1 focus:ring-blue-500'
+      ? 'bg-gray-700 border-gray-600 text-white placeholder-gray-400' 
+      : 'bg-white border-gray-300'
   }`;
 
   const labelClasses = `block text-sm font-medium mb-1 ${

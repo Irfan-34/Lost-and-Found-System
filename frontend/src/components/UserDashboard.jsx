@@ -12,11 +12,11 @@ function UserDashboard({ items = [], onItemAdded }) {
   const [selectedItem, setSelectedItem] = useState(null);
   const [showClaimForm, setShowClaimForm] = useState(false);
 
-  const lostItems = items.filter(item => 
+  const lostItems = items.filter(item =>
     item.status === 'Lost' || item.status === 'lost'
   );
-  
-  const foundItems = items.filter(item => 
+
+  const foundItems = items.filter(item =>
     item.status === 'Found' || item.status === 'found'
   );
 
@@ -32,44 +32,62 @@ function UserDashboard({ items = [], onItemAdded }) {
   };
 
   return (
-    <div className="space-y-8">
-      {/* Two Main Cards */}
+    <div className="space-y-10">
+      {/* HERO SECTION */}
+      <section className="relative h-[65vh] rounded-2xl overflow-hidden shadow-2xl">
+        <div className="user-hero absolute inset-0" />
+        <div className="absolute inset-0 bg-gradient-to-b from-black/30 via-black/40 to-black/70" />
+        <div className="relative z-10 flex h-full items-center justify-center">
+          <div className="text-center px-6 max-w-3xl">
+            {/* Removed the heading and subtitle text */}
+            <div className="mt-8 flex gap-4 justify-center flex-wrap">
+              <button
+                onClick={() => setShowLostForm(true)}
+                className="px-6 py-3 rounded-xl bg-red-600 hover:bg-red-700 text-white font-semibold shadow-lg hover:shadow-red-700/30 transition"
+              >
+                Report Lost Item
+              </button>
+              <button
+                onClick={() => setShowFoundForm(true)}
+                className="px-6 py-3 rounded-xl bg-green-600 hover:bg-green-700 text-white font-semibold shadow-lg hover:shadow-green-700/30 transition"
+              >
+                Report Found Item
+              </button>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      {/* TWO MAIN CARDS */}
       <div className="grid md:grid-cols-2 gap-8">
-        
         {/* Lost Items Card */}
         <div className={`rounded-lg shadow-lg p-6 ${
           isDark ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'
         }`}>
           <div className="flex justify-between items-center mb-6">
-            <h2 className={`text-2xl font-bold ${
-              isDark ? 'text-red-400' : 'text-red-600'
-            }`}>
+            <h2 className={`text-2xl font-bold ${isDark ? 'text-red-400' : 'text-red-600'}`}>
               Lost Items ({lostItems.length})
             </h2>
             <button
               onClick={() => setShowLostForm(true)}
               className={`px-4 py-2 rounded-lg font-medium ${
-                isDark 
-                  ? 'bg-red-600 hover:bg-red-700 text-white' 
-                  : 'bg-red-500 hover:bg-red-600 text-white'
+                isDark ? 'bg-red-600 hover:bg-red-700 text-white' : 'bg-red-500 hover:bg-red-600 text-white'
               }`}
             >
-              Report Lost Item
+              Report Lost
             </button>
           </div>
-          
+
           <div className="space-y-4 max-h-96 overflow-y-auto">
             {lostItems.length === 0 ? (
-              <p className={`text-center py-8 ${
-                isDark ? 'text-gray-400' : 'text-gray-500'
-              }`}>
+              <p className={`${isDark ? 'text-gray-400' : 'text-gray-500'} text-center py-8`}>
                 No lost items reported yet
               </p>
             ) : (
               lostItems.map(item => (
-                <ItemCard 
-                  key={item.id} 
-                  item={item} 
+                <ItemCard
+                  key={item.id}
+                  item={item}
                   onClaim={() => handleClaim(item)}
                   showClaimButton={false}
                 />
@@ -83,35 +101,29 @@ function UserDashboard({ items = [], onItemAdded }) {
           isDark ? 'bg-gray-800 border border-gray-700' : 'bg-white border border-gray-200'
         }`}>
           <div className="flex justify-between items-center mb-6">
-            <h2 className={`text-2xl font-bold ${
-              isDark ? 'text-green-400' : 'text-green-600'
-            }`}>
+            <h2 className={`text-2xl font-bold ${isDark ? 'text-green-400' : 'text-green-600'}`}>
               Found Items ({foundItems.length})
             </h2>
             <button
               onClick={() => setShowFoundForm(true)}
               className={`px-4 py-2 rounded-lg font-medium ${
-                isDark 
-                  ? 'bg-green-600 hover:bg-green-700 text-white' 
-                  : 'bg-green-500 hover:bg-green-600 text-white'
+                isDark ? 'bg-green-600 hover:bg-green-700 text-white' : 'bg-green-500 hover:bg-green-600 text-white'
               }`}
             >
-              Report Found Item
+              Report Found
             </button>
           </div>
-          
+
           <div className="space-y-4 max-h-96 overflow-y-auto">
             {foundItems.length === 0 ? (
-              <p className={`text-center py-8 ${
-                isDark ? 'text-gray-400' : 'text-gray-500'
-              }`}>
+              <p className={`${isDark ? 'text-gray-400' : 'text-gray-500'} text-center py-8`}>
                 No found items reported yet
               </p>
             ) : (
               foundItems.map(item => (
-                <ItemCard 
-                  key={item.id} 
-                  item={item} 
+                <ItemCard
+                  key={item.id}
+                  item={item}
                   onClaim={() => handleClaim(item)}
                   showClaimButton={true}
                 />
@@ -121,9 +133,9 @@ function UserDashboard({ items = [], onItemAdded }) {
         </div>
       </div>
 
-      {/* Modal for Lost Item Form */}
+      {/* Lost Item Modal */}
       {showLostForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50">
           <div className={`rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto ${
             isDark ? 'bg-gray-800' : 'bg-white'
           }`}>
@@ -141,9 +153,9 @@ function UserDashboard({ items = [], onItemAdded }) {
         </div>
       )}
 
-      {/* Modal for Found Item Form */}
+      {/* Found Item Modal */}
       {showFoundForm && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+        <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50">
           <div className={`rounded-lg shadow-xl w-full max-w-md max-h-[90vh] overflow-y-auto ${
             isDark ? 'bg-gray-800' : 'bg-white'
           }`}>
@@ -161,12 +173,10 @@ function UserDashboard({ items = [], onItemAdded }) {
         </div>
       )}
 
-      {/* Modal for Claim Form */}
+      {/* Claim Form Modal */}
       {showClaimForm && selectedItem && (
-        <div className="fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
-          <div className={`rounded-lg shadow-xl w-full max-w-md ${
-            isDark ? 'bg-gray-800' : 'bg-white'
-          }`}>
+        <div className="fixed inset-0 bg-black/60 flex justify-center items-center z-50">
+          <div className={`rounded-lg shadow-xl w-full max-w-md ${isDark ? 'bg-gray-800' : 'bg-white'}`}>
             <div className="p-6">
               <ClaimForm
                 item={selectedItem}
